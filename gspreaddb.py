@@ -22,8 +22,8 @@ class GspreadDB(dict):
     def clear(self):
         self.worksheet.clear()
 
-    def copy(self):  # or return dict?
-        raise NotImplementedError
+    def copy(self) -> dict:
+        return dict(self.items())
 
     def popitem(self):
         item = tuple(self.worksheet.row_values(1))
