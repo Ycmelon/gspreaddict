@@ -1,10 +1,6 @@
-from typing import Generic, Iterable, MutableMapping, TypeVar, Tuple, Mapping, Union
 import gspread
 import codecs
 import pickle
-
-KT = TypeVar("KT")
-VT = TypeVar("VT")
 
 
 def encode(obj):
