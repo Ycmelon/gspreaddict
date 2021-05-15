@@ -27,6 +27,8 @@ class GspreadDB(dict):
 
     def popitem(self):
         index = len(self)
+        if index == 0:
+            raise KeyError
         item = tuple(self.worksheet.row_values(index))
         self.worksheet.delete_row(index)
         return item
