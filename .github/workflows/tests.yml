@@ -25,7 +25,7 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Install test requirements
-        run: python -m pip install -U pytest coveralls
+        run: python -m pip install -U pytest pytest-cov coveralls
 
       - name: Run tests
         run: python -m pytest tests.py --cov=gspreaddb
