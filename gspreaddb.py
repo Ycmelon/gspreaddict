@@ -26,8 +26,9 @@ class GspreadDB(dict):
         return dict(self.items())
 
     def popitem(self):
-        item = tuple(self.worksheet.row_values(1))
-        self.worksheet.delete_row(1)
+        index = len(self)
+        item = tuple(self.worksheet.row_values(index))
+        self.worksheet.delete_row(index)
         return item
 
     def setdefault(self, key, default):
@@ -70,6 +71,12 @@ class GspreadDB(dict):
         except gspread.models.CellNotFound:
             raise KeyError(key)
 
+    def get(self, key, default=None):
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            return default
+
     def __setitem__(self, key, value):
         try:
             row = self.worksheet.find(self.encode(key), in_column=1).row
@@ -99,9 +106,3 @@ class GspreadDB(dict):
             return True
         except gspread.models.CellNotFound:
             return False
-
-    def get(self, key, default=None):
-        try:
-            return self.__getitem__(key)
-        except KeyError:
-            return default
