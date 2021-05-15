@@ -10,7 +10,7 @@ import gspread
 @pytest.fixture(autouse=True)
 def clear(db: gspreaddb.GspreadDB):
     db.clear()
-    time.sleep(5)  # prevent rate-limit
+    time.sleep(7)  # prevent rate-limit
 
 
 @pytest.fixture()

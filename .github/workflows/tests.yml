@@ -3,6 +3,7 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: always()
 
     strategy:
       max-parallel: 1
@@ -44,6 +45,7 @@ jobs:
     name: Indicate completion to coveralls.io
     needs: test
     runs-on: ubuntu-latest
+    if: always()
     container: python:3-slim
     steps:
       - name: Finished
