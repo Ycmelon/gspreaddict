@@ -29,28 +29,29 @@ class GspreadDB(dict):
         index = len(self)
         if index == 0:
             raise KeyError
-        item = tuple(self.worksheet.row_values(index))
-        self.worksheet.delete_row(index)
+        item = tuple(map(self.decode, self.worksheet.row_values(index)))
+        self.worksheet.delete_rows(index)
         return item
 
     def setdefault(self, key, default):
-        if self.__contains__(key):
-            return self.__getitem__(key)
+        if key in self:
+            return self[key]
 
-        self.__setitem__(key, default)
+        self[key] = default
         return default
 
-    def update(self, items, **kwargs):
-        try:
-            items.keys()  # Check for keys method
-            for key in items:
-                self.__setitem__(key, items[key])
-        except AttributeError:
-            for key, value in items:
-                self.__setitem__(key, value)
+    def update(self, items=None, **kwargs):
+        if items != None:
+            try:
+                items.keys()  # Check for keys method
+                for key in items:
+                    self[key] = items[key]
+            except AttributeError:
+                for key, value in items:
+                    self[key] = value
 
         for key in kwargs:
-            self.__setitem__(key, kwargs[key])
+            self[key] = kwargs[key]
 
     def keys(self):
         return map(decode, self.worksheet.col_values(1))
@@ -75,7 +76,7 @@ class GspreadDB(dict):
 
     def get(self, key, default=None):
         try:
-            return self.__getitem__(key)
+            return self[key]
         except KeyError:
             return default
 
