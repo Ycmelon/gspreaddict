@@ -10,10 +10,10 @@ import gspread
 @pytest.fixture(autouse=True)
 def clear(db: gspreaddb.GspreadDB):
     db.clear()
-    time.sleep(7)  # prevent rate-limit
+    time.sleep(5)  # prevent rate-limit
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def db():
     SERVICE_ACCOUNT_CREDENTIALS = os.getenv("SERVICE_ACCOUNT_CREDENTIALS")
     if SERVICE_ACCOUNT_CREDENTIALS == None:
