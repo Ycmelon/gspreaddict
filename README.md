@@ -15,15 +15,15 @@ import gspread
 from gspreaddb import GspreadDB
 
 gc = gspread.service_account()  # https://docs.gspread.org/en/latest/oauth2.html
-mydict = GspreadDB(gc.open("Untitled spreadsheet").sheet1)
+db = GspreadDB(gc.open("Untitled spreadsheet").sheet1)
 
-mydict["any_picklable_object"] = "any_picklable_object"
-print(mydict["any_picklable_object"])  # any_picklable_object
+db["any_picklable_object"] = "any_picklable_object"
+print(db["any_picklable_object"])  # any_picklable_object
 
-for key, value in mydict.items():
+for key, value in db.items():
     print(key, value)  # any_picklable_object any_picklable_object
 
-print(len(mydict))  # 1
+print(len(db))  # 1
 ```
 
 ## :trophy: Credits
