@@ -12,8 +12,14 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Pip install
+      - name: Install requirements
         run: python -m pip install -U -r requirements.txt
 
+      - name: Install test requirements
+        run: python -m pip install -U pytest pytest-cov
+
       - name: Run tests
-        run: python tests.py
+        run: python -m pytest tests.py --cov=gspreaddb
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v1.1.2

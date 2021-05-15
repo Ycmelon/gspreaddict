@@ -1,4 +1,4 @@
-# gspreadDB [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![GitHub license](https://img.shields.io/github/license/Ycmelon/gspreaddb)](https://github.com/Ycmelon/gspreadDB/blob/main/LICENSE)
+# gspreadDB [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![GitHub license](https://img.shields.io/github/license/Ycmelon/gspreaddb)](https://github.com/Ycmelon/gspreadDB/blob/main/LICENSE) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A simple key-value store built on Google Sheets (gspread) with a `dict`-like interface
 
