@@ -1,6 +1,8 @@
-import gspread
+import sys
 import codecs
 import pickle
+
+import gspread
 
 
 def encode(obj):
@@ -23,7 +25,7 @@ class GspreadDB(dict):
         self.worksheet.clear()
 
     def copy(self) -> dict:
-        return dict(self.items())
+        return dict(self)
 
     def popitem(self):
         index = len(self)
@@ -53,13 +55,13 @@ class GspreadDB(dict):
         for key in kwargs:
             self[key] = kwargs[key]
 
-    def keys(self):
+    def keys(self):  # TODO dict views
         return map(decode, self.worksheet.col_values(1))
 
-    def values(self):
+    def values(self):  # TODO dict views
         return map(decode, self.worksheet.col_values(2))
 
-    def items(self):
+    def items(self):  # TODO dict views
         items = self.worksheet.get_all_values()
         for key, value in items:
             yield self.decode(key), self.decode(value)
@@ -97,8 +99,25 @@ class GspreadDB(dict):
     def __iter__(self):
         return self.keys()
 
+    if sys.version_info >= (3, 8):
+
+        def __reversed__(self):
+            return reversed(list(self.keys()))  # TODO dict views
+
     def __str__(self):
-        return str(dict(self.items()))
+        return str(dict(self))
+
+    if sys.version_info >= (3, 9):
+
+        def __class_getitem__(cls, item):
+            return f"{cls.__name__}[{item.__name__}]"
+
+        def __or__(self, items):  # | (merge)
+            return dict(self) | items
+
+        def __ior__(self, items):  # |= (update)
+            self.update(items)
+            return self
 
     def __repr__(self):
         return str(self)
@@ -109,3 +128,6 @@ class GspreadDB(dict):
             return True
         except gspread.models.CellNotFound:
             return False
+
+    def __eq__(self, o: object) -> bool:
+        return dict(self) == o

@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import pytest
 import time
@@ -15,12 +16,15 @@ def clear(db: gspreaddb.GspreadDB):
 
 @pytest.fixture()
 def db():
-    SERVICE_ACCOUNT_CREDENTIALS = os.getenv("SERVICE_ACCOUNT_CREDENTIALS")
-    if SERVICE_ACCOUNT_CREDENTIALS == None:
-        raise RuntimeError("Missing service account credentials")
+    try:
+        gc = gspread.service_account()  # dev
+    except FileNotFoundError:
+        SERVICE_ACCOUNT_CREDENTIALS = os.getenv("SERVICE_ACCOUNT_CREDENTIALS")
+        if SERVICE_ACCOUNT_CREDENTIALS == None:
+            raise RuntimeError("Missing service account credentials")
 
-    credentials = json.loads(SERVICE_ACCOUNT_CREDENTIALS)
-    gc = gspread.service_account_from_dict(credentials)
+        credentials = json.loads(SERVICE_ACCOUNT_CREDENTIALS)
+        gc = gspread.service_account_from_dict(credentials)
 
     sheet = gc.open("gspreaddict").sheet1
     if sheet == None:
@@ -133,11 +137,48 @@ class TestMethods:
 
         assert keys == ["key1", "key2"]
 
+    if sys.version_info >= (3, 8):
+
+        def test_reversed(self, db: gspreaddb.GspreadDB):
+            db["key1"] = "value1"
+            db["key2"] = "value2"
+
+            assert list(reversed(db)) == ["key2", "key1"]
+
     def test_str_repr(self, db: gspreaddb.GspreadDB):
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert str(db) == str({"key1": "value1", "key2": "value2"})
         assert repr(db) == str({"key1": "value1", "key2": "value2"})
+
+    if sys.version_info >= (3, 9):
+
+        def test_class_getmethod(self):
+            assert gspreaddb.GspreadDB[int] == "GspreadDB[int]"
+
+        def test_or(self, db: gspreaddb.GspreadDB):
+            db["key1"] = "value1"
+            db["key2"] = "value2"
+            dict1 = {"key2": "new_value2", "key3": "value3"}
+
+            assert db | dict1 == {
+                "key1": "value1",
+                "key2": "new_value2",
+                "key3": "value3",
+            }
+
+        def test_ior(self, db: gspreaddb.GspreadDB):
+            db["key1"] = "value1"
+            db["key2"] = "value2"
+            dict1 = {"key2": "new_value2", "key3": "value3"}
+
+            db |= dict1
+
+            assert db == {
+                "key1": "value1",
+                "key2": "new_value2",
+                "key3": "value3",
+            }
 
     def test_contains(self, db: gspreaddb.GspreadDB):
         assert not "key" in db
