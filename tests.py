@@ -8,6 +8,14 @@ import gspreaddb
 import gspread
 
 
+min_python38 = pytest.mark.skipif(
+    sys.version_info < (3, 8), reason="requires Python 3.8"
+)
+min_python39 = pytest.mark.skipif(
+    sys.version_info < (3, 9), reason="requires Python 3.9"
+)
+
+
 @pytest.fixture(autouse=True)
 def clear(db: gspreaddb.GspreadDB):
     db.clear()
@@ -137,13 +145,12 @@ class TestMethods:
 
         assert keys == ["key1", "key2"]
 
-    if sys.version_info >= (3, 8):
+    @min_python38
+    def test_reversed(self, db: gspreaddb.GspreadDB):
+        db["key1"] = "value1"
+        db["key2"] = "value2"
 
-        def test_reversed(self, db: gspreaddb.GspreadDB):
-            db["key1"] = "value1"
-            db["key2"] = "value2"
-
-            assert list(reversed(db)) == ["key2", "key1"]
+        assert list(reversed(db)) == ["key2", "key1"]
 
     def test_str_repr(self, db: gspreaddb.GspreadDB):
         db["key1"] = "value1"
@@ -151,34 +158,35 @@ class TestMethods:
         assert str(db) == str({"key1": "value1", "key2": "value2"})
         assert repr(db) == str({"key1": "value1", "key2": "value2"})
 
-    if sys.version_info >= (3, 9):
+    @min_python39
+    def test_class_getmethod(self):
+        assert gspreaddb.GspreadDB[int] == "GspreadDB[int]"
 
-        def test_class_getmethod(self):
-            assert gspreaddb.GspreadDB[int] == "GspreadDB[int]"
+    @min_python39
+    def test_or(self, db: gspreaddb.GspreadDB):
+        db["key1"] = "value1"
+        db["key2"] = "value2"
+        dict1 = {"key2": "new_value2", "key3": "value3"}
 
-        def test_or(self, db: gspreaddb.GspreadDB):
-            db["key1"] = "value1"
-            db["key2"] = "value2"
-            dict1 = {"key2": "new_value2", "key3": "value3"}
+        assert db | dict1 == {
+            "key1": "value1",
+            "key2": "new_value2",
+            "key3": "value3",
+        }
 
-            assert db | dict1 == {
-                "key1": "value1",
-                "key2": "new_value2",
-                "key3": "value3",
-            }
+    @min_python39
+    def test_ior(self, db: gspreaddb.GspreadDB):
+        db["key1"] = "value1"
+        db["key2"] = "value2"
+        dict1 = {"key2": "new_value2", "key3": "value3"}
 
-        def test_ior(self, db: gspreaddb.GspreadDB):
-            db["key1"] = "value1"
-            db["key2"] = "value2"
-            dict1 = {"key2": "new_value2", "key3": "value3"}
+        db |= dict1
 
-            db |= dict1
-
-            assert db == {
-                "key1": "value1",
-                "key2": "new_value2",
-                "key3": "value3",
-            }
+        assert db == {
+            "key1": "value1",
+            "key2": "new_value2",
+            "key3": "value3",
+        }
 
     def test_contains(self, db: gspreaddb.GspreadDB):
         assert not "key" in db
