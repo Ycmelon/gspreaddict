@@ -11,10 +11,10 @@ import gspread
 @pytest.fixture(autouse=True)
 def clear(db: gspreaddb.GspreadDB):
     db.clear()
-    time.sleep(7)  # prevent rate-limit
+    time.sleep(5)  # prevent rate-limit
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def db():
     try:
         gc = gspread.service_account()  # dev
