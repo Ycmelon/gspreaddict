@@ -1,1 +1,1 @@
-gspread
+gspread>5, <6

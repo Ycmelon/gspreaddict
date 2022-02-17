@@ -14,9 +14,7 @@ def decode(obj):
 
 
 class GspreadDB(dict):
-    def __init__(
-        self, worksheet: gspread.models.Worksheet, encode=encode, decode=decode
-    ):
+    def __init__(self, worksheet: gspread.Worksheet, encode=encode, decode=decode):
         self.worksheet = worksheet
         self.encode = encode
         self.decode = decode
@@ -70,10 +68,10 @@ class GspreadDB(dict):
         return len(self.worksheet.get_all_values())
 
     def __getitem__(self, key):
-        try:
-            row = self.worksheet.find(self.encode(key), in_column=1).row
-            return self.decode(self.worksheet.cell(row, 2).value)
-        except gspread.models.CellNotFound:
+        cell = self.worksheet.find(self.encode(key), in_column=1)
+        if cell:
+            return self.decode(self.worksheet.cell(cell.row, 2).value)
+        else:
             raise KeyError(key)
 
     def get(self, key, default=None):
@@ -83,17 +81,19 @@ class GspreadDB(dict):
             return default
 
     def __setitem__(self, key, value):
-        try:
-            row = self.worksheet.find(self.encode(key), in_column=1).row
-            self.worksheet.update_cell(row, 2, self.encode(value))
-        except gspread.models.CellNotFound:  # Insert new
+        cell = self.worksheet.find(self.encode(key), in_column=1)
+
+        if cell:
+            self.worksheet.update_cell(cell.row, 2, self.encode(value))
+        else:
             self.worksheet.append_row([self.encode(key), self.encode(value)])
 
     def __delitem__(self, key):
-        try:
-            row = self.worksheet.find(self.encode(key), in_column=1).row
-            self.worksheet.delete_rows(row)
-        except gspread.models.CellNotFound:
+        cell = self.worksheet.find(self.encode(key), in_column=1)
+
+        if cell:
+            self.worksheet.delete_rows(cell.row)
+        else:
             raise KeyError(key)
 
     def __iter__(self):
@@ -123,11 +123,7 @@ class GspreadDB(dict):
         return str(self)
 
     def __contains__(self, key):
-        try:
-            self.worksheet.find(self.encode(key), in_column=1)
-            return True
-        except gspread.models.CellNotFound:
-            return False
+        return self.worksheet.find(self.encode(key), in_column=1) != None
 
     def __eq__(self, o: object) -> bool:
         return dict(self) == o
