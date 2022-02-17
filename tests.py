@@ -205,25 +205,10 @@ class TestMethods:
         assert not bool(db)
 
 
-class TestKeyTypes:
-    def test_list_tuple(self, db: gspreaddb.GspreadDB):
-        key1 = ["key1.1", "key1.2"]
-        key1_copy = key1.copy()
-        db[key1] = "value1"
+class TestTypes:
+    def test_none(self, db: gspreaddb.GspreadDB):
+        db["key1"] = None
+        assert db["key1"] == None
 
-        assert db[key1] == "value1"
-        assert db[key1_copy] == "value1"
-
-        key2 = ("key1.1", "key1.2")
-        key2_copy = key1.copy()
-        db[key2] = "value1"
-
-        assert db[key2] == "value1"
-        assert db[key2_copy] == "value1"
-
-    def test_int_float(self, db: gspreaddb.GspreadDB):
-        db[1] = "value1"
-        assert db[1] == "value1"
-
-        db[1.0] = "value2"
-        assert db[1.0] == "value2"
+        db["key1"] = "value1"
+        assert db["key1"] != None

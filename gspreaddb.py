@@ -1,23 +1,12 @@
 import sys
-import codecs
-import pickle
-
 import gspread
 
-
-def encode(obj):
-    return codecs.encode(pickle.dumps(obj), "base64").decode()
+from typing import Iterator, Union, Tuple, Dict
 
 
-def decode(obj):
-    return pickle.loads(codecs.decode(obj.encode(), "base64"))
-
-
-class GspreadDB(dict):
-    def __init__(self, worksheet: gspread.Worksheet, encode=encode, decode=decode):
+class GspreadDB(Dict[str, str]):
+    def __init__(self, worksheet: gspread.Worksheet):
         self.worksheet = worksheet
-        self.encode = encode
-        self.decode = decode
 
     def clear(self):
         self.worksheet.clear()
@@ -25,15 +14,15 @@ class GspreadDB(dict):
     def copy(self) -> dict:
         return dict(self)
 
-    def popitem(self):
+    def popitem(self) -> Tuple[str, Union[str, None]]:
         index = len(self)
         if index == 0:
             raise KeyError
-        item = tuple(map(self.decode, self.worksheet.row_values(index)))
+        item = tuple(self.worksheet.row_values(index))
         self.worksheet.delete_rows(index)
         return item
 
-    def setdefault(self, key, default):
+    def setdefault(self, key: str, default: Union[str, None]):
         if key in self:
             return self[key]
 
@@ -53,43 +42,42 @@ class GspreadDB(dict):
         for key in kwargs:
             self[key] = kwargs[key]
 
-    def keys(self):  # TODO dict views
-        return map(decode, self.worksheet.col_values(1))
+    def keys(self) -> Iterator[str]:
+        return iter(self.worksheet.col_values(1))
 
-    def values(self):  # TODO dict views
-        return map(decode, self.worksheet.col_values(2))
+    def values(self) -> Iterator[Union[str, None]]:
+        return iter(self.worksheet.col_values(2))
 
-    def items(self):  # TODO dict views
+    def items(self) -> Iterator[Tuple[str, Union[str, None]]]:
         items = self.worksheet.get_all_values()
-        for key, value in items:
-            yield self.decode(key), self.decode(value)
+        return map(tuple, items)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.worksheet.get_all_values())
 
-    def __getitem__(self, key):
-        cell = self.worksheet.find(self.encode(key), in_column=1)
+    def __getitem__(self, key: str) -> Union[str, None]:
+        cell = self.worksheet.find(key, in_column=1)
         if cell:
-            return self.decode(self.worksheet.cell(cell.row, 2).value)
+            return self.worksheet.cell(cell.row, 2).value
         else:
             raise KeyError(key)
 
-    def get(self, key, default=None):
+    def get(self, key: str, default=None) -> Union[str, None]:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def __setitem__(self, key, value):
-        cell = self.worksheet.find(self.encode(key), in_column=1)
+    def __setitem__(self, key: str, value: Union[str, None]):
+        cell = self.worksheet.find(key, in_column=1)
 
         if cell:
-            self.worksheet.update_cell(cell.row, 2, self.encode(value))
+            self.worksheet.update_cell(cell.row, 2, value)
         else:
-            self.worksheet.append_row([self.encode(key), self.encode(value)])
+            self.worksheet.append_row([key, value])
 
-    def __delitem__(self, key):
-        cell = self.worksheet.find(self.encode(key), in_column=1)
+    def __delitem__(self, key: str):
+        cell = self.worksheet.find(key, in_column=1)
 
         if cell:
             self.worksheet.delete_rows(cell.row)
@@ -123,7 +111,7 @@ class GspreadDB(dict):
         return str(self)
 
     def __contains__(self, key):
-        return self.worksheet.find(self.encode(key), in_column=1) != None
+        return self.worksheet.find(key, in_column=1) != None
 
     def __eq__(self, o: object) -> bool:
         return dict(self) == o
