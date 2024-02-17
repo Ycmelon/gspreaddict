@@ -9,7 +9,7 @@ jobs:
       max-parallel: 1
       matrix:
         include:
-          - python-version: "3.6"
+          # - python-version: "3.6"  https://github.com/actions/setup-python/issues/544
           - python-version: "3.7"
           - python-version: "3.8"
           - python-version: "3.9"
