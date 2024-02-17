@@ -4,7 +4,7 @@ import gspread
 from typing import Iterator, Union, Tuple, Dict
 
 
-class GspreadDB(Dict[str, str]):
+class GspreadDict(Dict[str, Union[str, None]]):
     def __init__(self, worksheet: gspread.Worksheet):
         self.worksheet = worksheet
 
@@ -32,10 +32,10 @@ class GspreadDB(Dict[str, str]):
     def update(self, items=None, **kwargs):
         if items != None:
             try:
-                items.keys()  # Check for keys method
+                items.keys()  # Check for keys method i.e. items is a mapping
                 for key in items:
                     self[key] = items[key]
-            except AttributeError:
+            except AttributeError:  # Otherwise e.g. list of tuple
                 for key, value in items:
                     self[key] = value
 

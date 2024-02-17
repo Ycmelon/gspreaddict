@@ -1,34 +1,30 @@
-# :pencil: gspreadDB
+# gspreaddict ![Python version >= 3.6](https://img.shields.io/badge/python-%E2%89%A53.6-blue) [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![Coverage Status](https://coveralls.io/repos/github/Ycmelon/gspreadDB/badge.svg?branch=main)](https://coveralls.io/github/Ycmelon/gspreadDB?branch=main)
 
-![Python version >= 3.6](https://img.shields.io/badge/python-%E2%89%A53.6-blue) [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![Coverage Status](https://coveralls.io/repos/github/Ycmelon/gspreadDB/badge.svg?branch=main)](https://coveralls.io/github/Ycmelon/gspreadDB?branch=main) [![GitHub license](https://img.shields.io/github/license/Ycmelon/gspreaddb)](https://github.com/Ycmelon/gspreadDB/blob/main/LICENSE) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-
-A simple key-value store built on Google Sheets (gspread) with a `dict`-like interface
-
-This module is a proof of concept, you probably shouldn't use it :)
-
-## :book: Example
+A persistent `dict` wrapper around Google Sheets using gspread
 
 ```python
 import gspread
-from gspreaddb import GspreadDB
+from gspreaddict import GspreadDict
 
 gc = gspread.service_account()  # https://docs.gspread.org/en/latest/oauth2.html
-db = GspreadDB(gc.open("Untitled spreadsheet").sheet1)
+db = GspreadDict(gc.open("My spreadsheet").sheet1)
 
 # Keys can be str, and values can be str | None
-db["string"] = "string"
-print(db["string"])  # string
+db["colour"] = "blue"
+db["shape"] = "triangle"
+db["size"] = "large"
+print(db["shape"])  # -> triangle
 
 for key, value in db.items():
-    print(key, value)  # string string
+    print(key, value)  # colour blue, shape triangle, size large
 
-print(len(db))  # 1
+print(len(db))  # 3
 ```
 
-## :trophy: Credits
+## Credits
 
 - Inspiration from [sqlitedict](https://github.com/RaRe-Technologies/sqlitedict)
 
-## :page_with_curl: License
+## License
 
-[GNU General Public License v3.0](https://github.com/Ycmelon/gspreadDB/blob/main/LICENSE)
+[GNU General Public License v3.0](LICENSE)

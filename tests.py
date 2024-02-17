@@ -4,8 +4,8 @@ import json
 import pytest
 import time
 
-import gspreaddb
 import gspread
+import gspreaddict
 
 
 min_python38 = pytest.mark.skipif(
@@ -17,7 +17,7 @@ min_python39 = pytest.mark.skipif(
 
 
 @pytest.fixture(autouse=True)
-def clear(db: gspreaddb.GspreadDB):
+def clear(db: gspreaddict.GspreadDict):
     db.clear()
     time.sleep(5)  # prevent rate-limit
 
@@ -37,13 +37,13 @@ def db():
     sheet = gc.open("gspreaddict").sheet1
     if sheet == None:
         raise RuntimeError("Missing sheet")
-    db = gspreaddb.GspreadDB(sheet)
+    db = gspreaddict.GspreadDict(sheet)
 
     return db
 
 
 class TestMethods:
-    def test_clear(self, db: gspreaddb.GspreadDB):
+    def test_clear(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert len(db) == 2
@@ -51,12 +51,12 @@ class TestMethods:
         db.clear()
         assert len(db) == 0
 
-    def test_copy(self, db: gspreaddb.GspreadDB):
+    def test_copy(self, db: gspreaddict.GspreadDict):
         db_copy = db.copy()
         assert db == db_copy
         assert not db is db_copy
 
-    def test_popitem(self, db: gspreaddb.GspreadDB):
+    def test_popitem(self, db: gspreaddict.GspreadDict):
         with pytest.raises(KeyError):
             db.popitem()
 
@@ -64,11 +64,11 @@ class TestMethods:
         db["key2"] = "value2"
         assert db.popitem() == ("key2", "value2")
 
-    def test_setdefault(self, db: gspreaddb.GspreadDB):
+    def test_setdefault(self, db: gspreaddict.GspreadDict):
         assert db.setdefault("key", "default") == "default"
         assert db.setdefault("key", "new_value") == "default"
 
-    def test_update(self, db: gspreaddb.GspreadDB):
+    def test_update(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
 
         dict1 = {"key1": "new_value1", "key2": "value2"}
@@ -85,28 +85,28 @@ class TestMethods:
         assert db["key3"] == "new_value3"
         assert db["key4"] == "value4"
 
-    def test_keys(self, db: gspreaddb.GspreadDB):
+    def test_keys(self, db: gspreaddict.GspreadDict):
         assert list(db.keys()) == []
 
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert list(db.keys()) == ["key1", "key2"]
 
-    def test_values(self, db: gspreaddb.GspreadDB):
+    def test_values(self, db: gspreaddict.GspreadDict):
         assert list(db.values()) == []
 
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert list(db.values()) == ["value1", "value2"]
 
-    def test_items(self, db: gspreaddb.GspreadDB):
+    def test_items(self, db: gspreaddict.GspreadDict):
         assert list(db.items()) == []
 
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert list(db.items()) == [("key1", "value1"), ("key2", "value2")]
 
-    def test_len(self, db: gspreaddb.GspreadDB):
+    def test_len(self, db: gspreaddict.GspreadDict):
         assert len(db) == 0
 
         db["key1"] = "value1"
@@ -116,7 +116,7 @@ class TestMethods:
         db["key3"] = "value3"
         assert len(db) == 3
 
-    def test_get_set(self, db: gspreaddb.GspreadDB):
+    def test_get_set(self, db: gspreaddict.GspreadDict):
         with pytest.raises(KeyError):
             db["key"]
 
@@ -128,14 +128,14 @@ class TestMethods:
         db["key"] = "new_value"
         assert db["key"] == "new_value"
 
-    def test_delete(self, db: gspreaddb.GspreadDB):
+    def test_delete(self, db: gspreaddict.GspreadDict):
         db["key"] = "value"
         del db["key"]
 
         with pytest.raises(KeyError):
             del db["key"]
 
-    def test_iter(self, db: gspreaddb.GspreadDB):
+    def test_iter(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
 
@@ -146,13 +146,13 @@ class TestMethods:
         assert keys == ["key1", "key2"]
 
     @min_python38
-    def test_reversed(self, db: gspreaddb.GspreadDB):
+    def test_reversed(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
 
         assert list(reversed(db)) == ["key2", "key1"]
 
-    def test_str_repr(self, db: gspreaddb.GspreadDB):
+    def test_str_repr(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
         assert str(db) == str({"key1": "value1", "key2": "value2"})
@@ -160,10 +160,10 @@ class TestMethods:
 
     @min_python39
     def test_class_getmethod(self):
-        assert gspreaddb.GspreadDB[int] == "GspreadDB[int]"
+        assert gspreaddict.GspreadDict[int] == "GspreadDict[int]"
 
     @min_python39
-    def test_or(self, db: gspreaddb.GspreadDB):
+    def test_or(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
         dict1 = {"key2": "new_value2", "key3": "value3"}
@@ -175,7 +175,7 @@ class TestMethods:
         }
 
     @min_python39
-    def test_ior(self, db: gspreaddb.GspreadDB):
+    def test_ior(self, db: gspreaddict.GspreadDict):
         db["key1"] = "value1"
         db["key2"] = "value2"
         dict1 = {"key2": "new_value2", "key3": "value3"}
@@ -188,13 +188,13 @@ class TestMethods:
             "key3": "value3",
         }
 
-    def test_contains(self, db: gspreaddb.GspreadDB):
+    def test_contains(self, db: gspreaddict.GspreadDict):
         assert not "key" in db
 
         db["key"] = "value"
         assert "key" in db
 
-    def test_bool(self, db: gspreaddb.GspreadDB):
+    def test_bool(self, db: gspreaddict.GspreadDict):
         assert not bool(db)
 
         db["key1"] = "value1"
@@ -206,7 +206,7 @@ class TestMethods:
 
 
 class TestTypes:
-    def test_none(self, db: gspreaddb.GspreadDB):
+    def test_none(self, db: gspreaddict.GspreadDict):
         db["key1"] = None
         assert db["key1"] == None
 
