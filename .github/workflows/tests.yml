@@ -9,10 +9,10 @@ jobs:
       max-parallel: 1
       matrix:
         include:
-          - python-version: "3.6"
-          - python-version: "3.7"
-          - python-version: "3.8"
-          - python-version: "3.9"
+          - python-version: "3.6.15"
+          - python-version: "3.7.17"
+          - python-version: "3.8.18"
+          - python-version: "3.9.18"
 
     steps:
       - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
         run: python -m pip install -U pytest pytest-cov coveralls
 
       - name: Run tests
-        run: python -m pytest tests.py --cov=gspreaddb
+        run: python -m pytest tests.py --cov=gspreaddict
         env:
           SERVICE_ACCOUNT_CREDENTIALS: ${{ secrets.SERVICE_ACCOUNT_CREDENTIALS }}
 
