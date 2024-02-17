@@ -111,7 +111,7 @@ class GspreadDict(Dict[str, Union[str, None]]):
         return str(self)
 
     def __contains__(self, key):
-        return self.worksheet.find(key, in_column=1) != None
+        return not self.worksheet.find(key, in_column=1) is None
 
     def __eq__(self, o: object) -> bool:
         return dict(self) == o
