@@ -1,4 +1,4 @@
-# gspreaddict ![Python version >= 3.6](https://img.shields.io/badge/python-%E2%89%A53.6-blue) [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![Coverage Status](https://coveralls.io/repos/github/Ycmelon/gspreadDB/badge.svg?branch=main)](https://coveralls.io/github/Ycmelon/gspreadDB?branch=main)
+# gspreaddict ![Python version >= 3.6](https://img.shields.io/badge/python-%E2%89%A53.6-blue) [![GitHub Actions tests badge](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml/badge.svg)](https://github.com/Ycmelon/gspreadDB/actions/workflows/tests.yml) [![Coverage Status](https://coveralls.io/repos/github/Ycmelon/gspreaddict/badge.svg?branch=main)](https://coveralls.io/github/Ycmelon/gspreaddict?branch=main)
 
 A persistent `dict` wrapper around Google Sheets using gspread
 
@@ -16,7 +16,7 @@ db["size"] = "large"
 print(db["shape"])  # -> triangle
 
 for key, value in db.items():
-    print(key, value)  # colour blue, shape triangle, size large
+    print(key, value)  # colour blue    shape triangle    size large
 
 print(len(db))  # 3
 ```
